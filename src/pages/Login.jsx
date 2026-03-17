@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import users from "../data/users";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -9,7 +8,11 @@ function Login() {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    const user = users.find(
+    // GET USERS FROM LOCAL STORAGE
+    const storedUsers = localStorage.getItem("users");
+    const usersList = storedUsers ? JSON.parse(storedUsers) : [];
+
+    const user = usersList.find(
       (u) => u.username === username && u.password === password
     );
 
@@ -20,13 +23,9 @@ function Login() {
 
     if (user.role === "Cashier") {
       navigate("/cashier");
-    }
-
-    if (user.role === "Administrator") {
+    } else if (user.role === "Administrator") {
       navigate("/admin");
-    }
-
-    if (user.role === "Supervisor") {
+    } else if (user.role === "Supervisor") {
       navigate("/logs");
     }
   };
@@ -45,6 +44,7 @@ function Login() {
             className="form-control"
             type="text"
             placeholder="Enter username"
+            value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
         </div>
@@ -55,6 +55,7 @@ function Login() {
             className="form-control"
             type="password"
             placeholder="Enter password"
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>

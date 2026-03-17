@@ -1,11 +1,18 @@
-import { useState } from "react";
-import products from "../data/products";
+import { useState, useEffect } from "react";
 import TopBar from "../components/TopBar";
 import TransactionCard from "../components/TransactionCard";
 
 function CashierDashboard() {
   const [cart, setCart] = useState([]);
   const [search, setSearch] = useState("");
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const savedProducts = localStorage.getItem("products");
+    if (savedProducts) {
+      setProducts(JSON.parse(savedProducts));
+    }
+  }, []);
 
   const addToCart = (product) => {
     setCart((prev) => [...prev, product]);
@@ -39,20 +46,24 @@ function CashierDashboard() {
           />
 
           <div className="row">
-            {filteredProducts.map((product) => (
-              <div className="col-md-3 mb-3" key={product.id}>
-                <div
-                  className="border rounded p-3 text-center bg-white shadow-sm h-100"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => addToCart(product)}
-                >
-                  <div className="fw-semibold">{product.name}</div>
-                  <small className="text-muted">
-                    ₱{product.price}
-                  </small>
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
+                <div className="col-md-3 mb-3" key={product.id}>
+                  <div
+                    className="border rounded p-3 text-center bg-white shadow-sm h-100"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => addToCart(product)}
+                  >
+                    <div className="fw-semibold">{product.name}</div>
+                    <small className="text-muted">
+                      ₱{product.price}
+                    </small>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p>No products available</p>
+            )}
           </div>
 
         </div>

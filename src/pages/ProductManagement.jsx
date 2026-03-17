@@ -1,14 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import productsData from "../data/products";
 import AdminSidebar from "../components/AdminSidebar";
 
 function ProductManagement() {
-  const [products, setProducts] = useState(productsData);
+
+  // LOAD FROM LOCAL STORAGE FIRST
+  const [products, setProducts] = useState(() => {
+    const saved = localStorage.getItem("products");
+    return saved ? JSON.parse(saved) : productsData;
+  });
+
   const [showModal, setShowModal] = useState(false);
 
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
+
+  // AUTO SAVE TO LOCAL STORAGE
+  useEffect(() => {
+    localStorage.setItem("products", JSON.stringify(products));
+  }, [products]);
 
   const addProduct = () => {
     if (!name || !price || !stock) {
@@ -23,7 +34,7 @@ function ProductManagement() {
       stock: Number(stock),
     };
 
-    setProducts([...products, newProduct]);
+    setProducts((prev) => [...prev, newProduct]);
 
     setName("");
     setPrice("");
@@ -61,13 +72,21 @@ function ProductManagement() {
             </thead>
 
             <tbody>
-              {products.map((product) => (
-                <tr key={product.id}>
-                  <td>{product.name}</td>
-                  <td>₱{product.price}</td>
-                  <td>{product.stock}</td>
+              {products.length > 0 ? (
+                products.map((product) => (
+                  <tr key={product.id}>
+                    <td>{product.name}</td>
+                    <td>₱{product.price}</td>
+                    <td>{product.stock}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3" className="text-center">
+                    No products yet
+                  </td>
                 </tr>
-              ))}
+              )}
             </tbody>
 
           </table>
