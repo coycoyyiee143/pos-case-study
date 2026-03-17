@@ -6,6 +6,7 @@ function CashierDashboard() {
   const [cart, setCart] = useState([]);
   const [search, setSearch] = useState("");
   const [products, setProducts] = useState([]);
+  const [barcodeInput, setBarcodeInput] = useState("");
 
   useEffect(() => {
     const savedProducts = localStorage.getItem("products");
@@ -14,12 +15,26 @@ function CashierDashboard() {
     }
   }, []);
 
+  // Add product to cart
   const addToCart = (product) => {
     setCart((prev) => [...prev, product]);
   };
 
+  // Cancel sale
   const cancelSale = () => {
     setCart([]);
+    setBarcodeInput("");
+  };
+
+  // Add product by barcode
+  const handleBarcodeAdd = () => {
+    const product = products.find(p => p.barcode === barcodeInput);
+    if (product) {
+      addToCart(product);
+      setBarcodeInput("");
+    } else {
+      alert("Product not found!");
+    }
   };
 
   const subtotal = cart.reduce((sum, item) => sum + item.price, 0);
@@ -30,7 +45,6 @@ function CashierDashboard() {
 
   return (
     <div className="container-fluid vh-100 d-flex flex-column">
-
       <TopBar />
 
       <div className="row flex-grow-1">
@@ -39,11 +53,27 @@ function CashierDashboard() {
         <div className="col-md-8 p-4 bg-light">
 
           <input
-            className="form-control mb-4"
+            className="form-control mb-3"
             placeholder="Search product..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
+
+          {/* Barcode input */}
+          <div className="input-group mb-4">
+            <input
+              className="form-control"
+              placeholder="Enter barcode..."
+              value={barcodeInput}
+              onChange={(e) => setBarcodeInput(e.target.value)}
+            />
+            <button
+              className="btn btn-dark"
+              onClick={handleBarcodeAdd}
+            >
+              Add by Barcode
+            </button>
+          </div>
 
           <div className="row">
             {filteredProducts.length > 0 ? (
@@ -55,9 +85,8 @@ function CashierDashboard() {
                     onClick={() => addToCart(product)}
                   >
                     <div className="fw-semibold">{product.name}</div>
-                    <small className="text-muted">
-                      ₱{product.price}
-                    </small>
+                    <small className="d-block text-muted">₱{product.price}</small>
+                    <small className="text-muted">Barcode:<small className="text-muted">Barcode: {product.barcode}</small> {product.barcode}</small>
                   </div>
                 </div>
               ))

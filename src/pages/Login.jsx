@@ -1,16 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import defaultUsers from "../data/users";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    // GET USERS FROM LOCAL STORAGE
+  useEffect(() => {
     const storedUsers = localStorage.getItem("users");
-    const usersList = storedUsers ? JSON.parse(storedUsers) : [];
+    if (!storedUsers) {
+      localStorage.setItem("users", JSON.stringify(defaultUsers));
+    }
+  }, []);
+
+  const handleLogin = () => {
+    const storedUsers = localStorage.getItem("users");
+    const usersList = storedUsers ? JSON.parse(storedUsers) : defaultUsers;
 
     const user = usersList.find(
       (u) => u.username === username && u.password === password
