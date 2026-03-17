@@ -14,6 +14,7 @@ function UserManagement() {
 
   useEffect(() => {
     localStorage.setItem("users", JSON.stringify(users));
+    window.dispatchEvent(new Event("pos-data-update"));
   }, [users]);
 
   const handleDelete = (id) => {

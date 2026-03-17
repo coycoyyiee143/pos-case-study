@@ -1,0 +1,98 @@
+.login-page {
+  min-height: 100vh;
+  background: #f6f7fb;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-topbar {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: #ffffff;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.login-brand-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  background: #0b5ed7;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+}
+
+.login-brand-title {
+  font-weight: 800;
+}
+
+.login-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.login-status-label {
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.login-main {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: 28px 16px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.login-card-hero {
+  background: radial-gradient(1200px 220px at 10% 0%, #eaf2ff 0%, #f7fbff 60%, #ffffff 100%);
+  padding: 22px 18px;
+  text-align: center;
+}
+
+.login-hero-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: #e8f0ff;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 10px auto;
+  font-size: 22px;
+}
+
+.login-legal button {
+  vertical-align: baseline;
+}
+
+.login-eye-btn {
+  width: 42px;
+  display: grid;
+  place-items: center;
+}
+
+.login-eye-btn svg {
+  display: block;
+}
+
+.login-footer {
+  margin-bottom: 10px;
+}
+

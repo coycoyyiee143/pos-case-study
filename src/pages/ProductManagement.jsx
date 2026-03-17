@@ -19,6 +19,7 @@ function ProductManagement() {
   // AUTO SAVE TO LOCAL STORAGE
   useEffect(() => {
     localStorage.setItem("products", JSON.stringify(products));
+    window.dispatchEvent(new Event("pos-data-update"));
   }, [products]);
 
   const addProduct = () => {
