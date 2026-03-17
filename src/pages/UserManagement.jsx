@@ -40,7 +40,7 @@ function UserManagement() {
           <h3>User Management</h3>
 
           <button
-            className="btn btn-dark"
+            className="btn btn-success"
             onClick={() => {
               setEditingUser(null);
               setShowModal(true);

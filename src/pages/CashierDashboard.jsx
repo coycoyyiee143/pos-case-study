@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import TopBar from "../components/TopBar";
 import DiscountModal from "../components/DiscountModal";
+import ReceiptModal from "../components/ReceiptModal";
 import "./CashierDashboard.css";
 
 function CashierDashboard() {
@@ -20,6 +21,10 @@ function CashierDashboard() {
     discountAmount: 0,
     finalTotal: 0,
   });
+
+  // ✅ Receipt state
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const [lastTransaction, setLastTransaction] = useState(null);
 
   useEffect(() => {
     const savedProducts = localStorage.getItem("products");
@@ -117,12 +122,9 @@ function CashierDashboard() {
 
       window.dispatchEvent(new Event("pos-data-update"));
 
-      alert(
-        `Payment successful!
-Subtotal: ₱${subtotalValue.toFixed(2)}
-Discount (${discountData.label}): -₱${discount.toFixed(2)}
-Total: ₱${grandTotal.toFixed(2)}`
-      );
+      // ✅ Show receipt instead of alert
+      setLastTransaction(newTransaction);
+      setShowReceiptModal(true);
 
       setCart([]);
       setSearch("");
@@ -276,7 +278,7 @@ Total: ₱${grandTotal.toFixed(2)}`
         </div>
       </div>
 
-      {/* MODAL */}
+      {/* DISCOUNT MODAL */}
       <DiscountModal
         isOpen={showDiscountModal}
         onClose={() => setShowDiscountModal(false)}
@@ -287,6 +289,13 @@ Total: ₱${grandTotal.toFixed(2)}`
           setShowDiscountModal(false);
           processSale();
         }}
+      />
+
+      {/* ✅ RECEIPT MODAL */}
+      <ReceiptModal
+        isOpen={showReceiptModal}
+        onClose={() => setShowReceiptModal(false)}
+        transaction={lastTransaction}
       />
     </div>
   );

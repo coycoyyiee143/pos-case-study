@@ -54,7 +54,7 @@ function ProductManagement() {
           <h3>Product Management</h3>
 
           <button
-            className="btn btn-dark"
+            className="btn btn-success"
             onClick={() => setShowModal(true)}
           >
             Add Product
@@ -100,13 +100,19 @@ function ProductManagement() {
             style={{ background: "rgba(0,0,0,0.5)" }}
           >
             <div className="modal-dialog modal-dialog-centered">
-              <div className="modal-content">
+              <div className="modal-content overflow-hidden">
 
-                <div className="modal-header">
-                  <h5 className="modal-title">Add Product</h5>
-
+                {/* COLORED HEADER */}
+                <div
+                  className="modal-header border-0 text-white"
+                  style={{ background: "#198754" }}
+                >
+                  <div>
+                    <h5 className="modal-title fw-bold mb-0">Add Product</h5>
+                    <small style={{ opacity: 0.85 }}>Fill in the details below</small>
+                  </div>
                   <button
-                    className="btn-close"
+                    className="btn-close btn-close-white"
                     onClick={() => setShowModal(false)}
                   />
                 </div>
@@ -154,7 +160,7 @@ function ProductManagement() {
                   </button>
 
                   <button
-                    className="btn btn-dark"
+                    className="btn btn-success"
                     onClick={addProduct}
                   >
                     Add Product
