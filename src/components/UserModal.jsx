@@ -52,11 +52,19 @@ function UserModal({ show, onClose, setUsers, editingUser }) {
   return (
     <div className="modal d-block" style={{ background: "rgba(0,0,0,0.5)" }}>
       <div className="modal-dialog modal-dialog-centered">
-        <div className="modal-content">
+        <div className="modal-content overflow-hidden">
 
-          <div className="modal-header">
-            <h5 className="modal-title">{editingUser ? "Edit User" : "Add User"}</h5>
-            <button className="btn-close" onClick={onClose}></button>
+          <div
+            className="modal-header border-0 text-white"
+            style={{ background: "#198754" }}
+          >
+            <div>
+              <h5 className="modal-title fw-bold mb-0">
+                {editingUser ? "Edit User" : "Add User"}
+              </h5>
+              <small style={{ opacity: 0.85 }}>Fill in the details below</small>
+            </div>
+            <button className="btn-close btn-close-white" onClick={onClose}></button>
           </div>
 
           <div className="modal-body">
@@ -97,7 +105,7 @@ function UserModal({ show, onClose, setUsers, editingUser }) {
 
           <div className="modal-footer">
             <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
-            <button className="btn btn-dark" onClick={handleSave}>
+            <button className="btn btn-success" onClick={handleSave}>
               {editingUser ? "Update User" : "Add User"}
             </button>
           </div>

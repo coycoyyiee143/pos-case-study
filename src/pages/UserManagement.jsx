@@ -14,6 +14,7 @@ function UserManagement() {
 
   useEffect(() => {
     localStorage.setItem("users", JSON.stringify(users));
+    window.dispatchEvent(new Event("pos-data-update"));
   }, [users]);
 
   const handleDelete = (id) => {
@@ -39,7 +40,7 @@ function UserManagement() {
           <h3>User Management</h3>
 
           <button
-            className="btn btn-dark"
+            className="btn btn-success"
             onClick={() => {
               setEditingUser(null);
               setShowModal(true);
