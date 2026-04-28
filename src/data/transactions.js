@@ -1,25 +1,38 @@
 const transactions = [
   {
     id: 1,
-    cashier: "cashier1",
-    status: "Completed",
-    date: "2026-03-13",
-    total: 84
+    cashier: "juan_dela_cruz",
+    date: "2025-01-15T10:30:00",
+    status: "completed",
+    discount: "Senior Citizen",
+    total_amount: 350.00,
+    items: [
+      { product: "Rice (5kg)", qty: 1, price: 280.00 },
+      { product: "Sardines",   qty: 2, price: 35.00  },
+    ],
   },
   {
     id: 2,
-    cashier: "cashier1",
-    status: "Cancelled",
-    date: "2026-03-12",
-    total: 0
+    cashier: "maria_santos",
+    date: "2025-01-15T11:00:00",
+    status: "cancelled",
+    discount: "None",
+    total_amount: 0,
+    items: [],
   },
   {
     id: 3,
-    cashier: "cashier2",
-    status: "PostVoid",
-    date: "2026-03-11",
-    total: 120
-  }
+    cashier: "juan_dela_cruz",
+    date: "2025-01-16T09:15:00",
+    status: "completed",
+    discount: "PWD",
+    total_amount: 540.00,
+    items: [
+      { product: "Cooking Oil", qty: 1, price: 180.00 },
+      { product: "Sugar (1kg)",  qty: 2, price: 80.00  },
+      { product: "Detergent",    qty: 2, price: 120.00 },
+    ],
+  },
 ];
 
 export default transactions;

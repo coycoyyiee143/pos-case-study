@@ -6,7 +6,20 @@
 use App\Http\Controllers\ProductController;
 // use App\Http\Controllers\TransactionController;
 // use App\Http\Controllers\UserController;
-// use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\AuditLogController;
+
+// Reports (admin only)
+Route::prefix('reports')->group(function () {
+    Route::get('/sales-summary', [ReportController::class, 'salesSummary']);
+    Route::get('/transactions',  [ReportController::class, 'transactions']);
+});
+
+// Audit Logs (admin only)
+Route::prefix('audit-logs')->group(function () {
+    Route::get('/',   [AuditLogController::class, 'index']);
+    Route::post('/',  [AuditLogController::class, 'store']);
+});
 
 
 // Route::get('/test', function () {
