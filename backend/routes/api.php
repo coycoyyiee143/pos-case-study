@@ -3,7 +3,7 @@
 // use Illuminate\Http\Request;
 // use Illuminate\Support\Facades\Route;
 // use App\Http\Controllers\AuthController;
-// use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductController;
 // use App\Http\Controllers\TransactionController;
 // use App\Http\Controllers\UserController;
 // use App\Http\Controllers\ReportController;
@@ -19,11 +19,12 @@
 // Route::post('/logout', [AuthController::class, 'logout']);
 
 
-// // ===================== PRODUCTS =====================
-// Route::get('/products', [ProductController::class, 'index']);      // view all
-// Route::post('/products', [ProductController::class, 'store']);     // add
-// Route::put('/products/{id}', [ProductController::class, 'update']); // edit
-// Route::delete('/products/{id}', [ProductController::class, 'destroy']); // delete
+// ===================== PRODUCTS =====================
+Route::get('/products', [ProductController::class, 'index']);
+Route::post('/products', [ProductController::class, 'store']);
+Route::get('/products/{id}', [ProductController::class, 'show']);
+Route::put('/products/{id}', [ProductController::class, 'update']);
+Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 
 
 // // ===================== TRANSACTIONS =====================
