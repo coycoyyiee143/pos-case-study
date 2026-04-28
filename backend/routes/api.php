@@ -5,7 +5,7 @@
 // use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
 // use App\Http\Controllers\TransactionController;
-// use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AuditLogController;
 
@@ -45,13 +45,10 @@ Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 // Route::post('/transactions', [TransactionController::class, 'store']); // checkout
 
 
-// // ===================== USERS =====================
-// Route::get('/users', [UserController::class, 'index']);      // list users
-// Route::post('/users', [UserController::class, 'store']);     // add user
-// Route::put('/users/{id}', [UserController::class, 'update']); // edit user
-// Route::delete('/users/{id}', [UserController::class, 'destroy']); // delete user
+// ===================== USERS =====================
+Route::get('/users', [UserController::class, 'index']);        // list users
+Route::post('/users', [UserController::class, 'store']);       // create user
+Route::get('/users/{id}', [UserController::class, 'show']);    // get single user
+Route::put('/users/{id}', [UserController::class, 'update']);  // update user
+Route::delete('/users/{id}', [UserController::class, 'destroy']); // delete user
 
-
-// // ===================== REPORTS =====================
-// Route::get('/reports/sales', [ReportController::class, 'sales']);
-// Route::get('/reports/transactions', [ReportController::class, 'transactions']);
