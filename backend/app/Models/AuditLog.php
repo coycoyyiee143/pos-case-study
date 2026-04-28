@@ -15,7 +15,6 @@ class AuditLog extends Model
         'ip_address',
     ];
 
-    // Relationship: each log belongs to a user
     public function user()
     {
         return $this->belongsTo(User::class);
