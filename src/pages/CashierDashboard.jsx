@@ -13,7 +13,6 @@ function CashierDashboard() {
   const [paymentMethod, setPaymentMethod] = useState("CASH");
   const [activeCategory, setActiveCategory] = useState("ALL");
 
-  // ✅ Discount state
   const [showDiscountModal, setShowDiscountModal] = useState(false);
   const [discountData, setDiscountData] = useState({
     type: "NONE",
@@ -22,15 +21,14 @@ function CashierDashboard() {
     finalTotal: 0,
   });
 
-  // ✅ Receipt state
   const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [lastTransaction, setLastTransaction] = useState(null);
 
   useEffect(() => {
-    const savedProducts = localStorage.getItem("products");
-    if (savedProducts) {
-      setProducts(JSON.parse(savedProducts));
-    }
+    fetch("http://127.0.0.1:8000/api/products")
+      .then((res) => res.json())
+      .then((data) => setProducts(data))
+      .catch((err) => console.error(err));
 
     const currentUser = localStorage.getItem("currentUser");
     if (currentUser) {
@@ -82,15 +80,11 @@ function CashierDashboard() {
     setCart([]);
   };
 
-  const processSale = () => {
+  const processSale = async () => {
     if (isPaying || cart.length === 0) return;
     setIsPaying(true);
 
     try {
-      const transactions = JSON.parse(
-        localStorage.getItem("transactions") || "[]"
-      );
-
       const subtotalValue = cart.reduce(
         (sum, item) => sum + item.price * item.qty,
         0
@@ -117,25 +111,52 @@ function CashierDashboard() {
         })),
       };
 
+      // UPDATE STOCK SA API
+      await Promise.all(
+        cart.map((item) => {
+          const product = products.find((p) => p.id === item.id);
+          const newStock = product.stock - item.qty;
+
+          return fetch(`http://127.0.0.1:8000/api/products/${item.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: product.name,
+              price: product.price,
+              stock: newStock,
+            }),
+          });
+        })
+      );
+
+      // I-REFRESH ANG PRODUCTS MULA SA API
+      const res = await fetch("http://127.0.0.1:8000/api/products");
+      const updatedProducts = await res.json();
+      setProducts(updatedProducts);
+
+      const transactions = JSON.parse(
+        localStorage.getItem("transactions") || "[]"
+      );
       transactions.push(newTransaction);
       localStorage.setItem("transactions", JSON.stringify(transactions));
 
       window.dispatchEvent(new Event("pos-data-update"));
 
-      // ✅ Show receipt instead of alert
       setLastTransaction(newTransaction);
       setShowReceiptModal(true);
 
       setCart([]);
       setSearch("");
 
-      // reset discount
       setDiscountData({
         type: "NONE",
         label: "No Discount",
         discountAmount: 0,
         finalTotal: 0,
       });
+    } catch (err) {
+      console.error(err);
+      alert("Cannot connect to server");
     } finally {
       setIsPaying(false);
     }
@@ -203,10 +224,21 @@ function CashierDashboard() {
                   <button
                     className="cashier-product-card"
                     onClick={() => addToCart(p)}
+                    disabled={p.stock === 0}
                   >
                     <div className="cashier-product-img">🛍️</div>
                     <div>{p.name}</div>
                     <div>₱{Number(p.price).toFixed(2)}</div>
+
+                    {/* STOCK INDICATOR */}
+                    {p.stock === 0 ? (
+                      <span className="badge bg-danger mt-1">Out of Stock</span>
+                    ) : p.stock <= 5 ? (
+                      <span className="badge bg-warning text-dark mt-1">Low Stock ({p.stock})</span>
+                    ) : (
+                      <span className="badge bg-success mt-1">In Stock ({p.stock})</span>
+                    )}
+
                   </button>
                 </div>
               ))}
@@ -220,16 +252,13 @@ function CashierDashboard() {
               {cart.map((item) => (
                 <div key={item.id} className="mb-2">
                   <div>{item.name}</div>
-
                   <div className="d-flex justify-content-between align-items-center">
                     <div>
                       <button onClick={() => decrementQty(item.id)}>-</button>
                       <span className="mx-2">{item.qty}</span>
                       <button onClick={() => incrementQty(item.id)}>+</button>
                     </div>
-
                     <div>₱{(item.price * item.qty).toFixed(2)}</div>
-
                     <button onClick={() => removeFromCart(item.id)}>×</button>
                   </div>
                 </div>
@@ -291,7 +320,7 @@ function CashierDashboard() {
         }}
       />
 
-      {/* ✅ RECEIPT MODAL */}
+      {/* RECEIPT MODAL */}
       <ReceiptModal
         isOpen={showReceiptModal}
         onClose={() => setShowReceiptModal(false)}

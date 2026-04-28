@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-function UserModal({ show, onClose, setUsers, editingUser }) {
+function UserModal({ show, onClose, fetchUsers, editingUser }) {
   const [username, setUsername] = useState("");
   const [role, setRole] = useState("Cashier");
   const [password, setPassword] = useState("");
@@ -9,7 +9,7 @@ function UserModal({ show, onClose, setUsers, editingUser }) {
     if (editingUser) {
       setUsername(editingUser.username);
       setRole(editingUser.role);
-      setPassword(editingUser.password);
+      setPassword(""); // 🔥 don't preload password
     } else {
       setUsername("");
       setRole("Cashier");
@@ -17,34 +17,49 @@ function UserModal({ show, onClose, setUsers, editingUser }) {
     }
   }, [editingUser]);
 
-  const handleSave = () => {
-    if (!username || !password) {
-      alert("Please fill all fields");
+  const handleSave = async () => {
+    if (!username || (!editingUser && !password)) {
+      alert("Please fill all required fields");
       return;
     }
 
-    const existingUsers = localStorage.getItem("users");
-    const usersList = existingUsers ? JSON.parse(existingUsers) : [];
+    try {
+      if (editingUser) {
+        // ================= UPDATE =================
+        await fetch(
+          `http://127.0.0.1:8000/api/users/${editingUser.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username,
+              role,
+              password, // optional (backend handles if empty)
+            }),
+          }
+        );
+      } else {
+        // ================= CREATE =================
+        await fetch("http://127.0.0.1:8000/api/users", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            role,
+            password,
+          }),
+        });
+      }
 
-    if (editingUser) {
-      const updatedUsers = usersList.map((u) =>
-        u.id === editingUser.id ? { ...u, username, role, password } : u
-      );
-      localStorage.setItem("users", JSON.stringify(updatedUsers));
-      setUsers(updatedUsers);
-    } else {
-      const newUser = {
-        id: Date.now(),
-        username,
-        role,
-        password,
-      };
-      const updatedUsers = [...usersList, newUser];
-      localStorage.setItem("users", JSON.stringify(updatedUsers));
-      setUsers(updatedUsers);
+      fetchUsers(); // 🔥 reload from backend
+      onClose();
+    } catch (error) {
+      console.error("Save error:", error);
     }
-
-    onClose();
   };
 
   if (!show) return null;
@@ -98,6 +113,7 @@ function UserModal({ show, onClose, setUsers, editingUser }) {
                 className="form-control"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                placeholder={editingUser ? "Leave blank to keep current password" : ""}
               />
             </div>
 
