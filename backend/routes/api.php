@@ -2,12 +2,13 @@
 
 // use Illuminate\Http\Request;
 // use Illuminate\Support\Facades\Route;
-// use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
 // use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AuditLogController;
+use Illuminate\Support\Facades\Route;
 
 // Reports (admin only)
 Route::prefix('reports')->group(function () {
@@ -28,7 +29,7 @@ Route::prefix('audit-logs')->group(function () {
 
 
 // // ===================== AUTH =====================
-// Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login']);
 // Route::post('/logout', [AuthController::class, 'logout']);
 
 
