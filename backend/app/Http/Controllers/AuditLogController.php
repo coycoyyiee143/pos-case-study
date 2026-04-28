@@ -7,8 +7,6 @@ use Illuminate\Http\Request;
 
 class AuditLogController extends Controller
 {
-    // GET /api/audit-logs
-    // Returns all logs, newest first, with the user who performed the action
     public function index()
     {
         $logs = AuditLog::with('user')
@@ -18,8 +16,6 @@ class AuditLogController extends Controller
         return response()->json($logs);
     }
 
-    // POST /api/audit-logs
-    // Create a new log entry (called internally by other controllers)
     public function store(Request $request)
     {
         $validated = $request->validate([
