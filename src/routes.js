@@ -6,14 +6,64 @@ import UserManagement from "./pages/UserManagement";
 import AuditLogs from "./pages/AuditLogs";
 import Reports from "./pages/Reports";
 
+import ProtectedRoute from "./ProtectedRoute";
+
 const routes = [
   { path: "/", element: <Login /> },
-  { path: "/cashier", element: <CashierDashboard /> },
-  { path: "/admin", element: <AdminDashboard /> },
-  { path: "/products", element: <ProductManagement /> },
-  { path: "/users", element: <UserManagement /> },
-  { path: "/logs", element: <AuditLogs /> },
-  { path: "/reports", element: <Reports /> }
+
+  {
+    path: "/cashier",
+    element: (
+      <ProtectedRoute role="cashier">
+        <CashierDashboard />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/admin",
+    element: (
+      <ProtectedRoute role="admin">
+        <AdminDashboard />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/products",
+    element: (
+      <ProtectedRoute role="admin">
+        <ProductManagement />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/users",
+    element: (
+      <ProtectedRoute role="admin">
+        <UserManagement />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/logs",
+    element: (
+      <ProtectedRoute role="supervisor">
+        <AuditLogs />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
+    path: "/reports",
+    element: (
+      <ProtectedRoute role="admin">
+        <Reports />
+      </ProtectedRoute>
+    ),
+  },
 ];
 
 export default routes;

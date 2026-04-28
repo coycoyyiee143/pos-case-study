@@ -14,41 +14,49 @@ function Login() {
     return username.trim().length > 0 && password.trim().length > 0;
   }, [username, password]);
 
-  const handleLogin = () => {
-    // GET USERS FROM LOCAL STORAGE
-    const storedUsers = localStorage.getItem("users");
-    const usersList = storedUsers ? JSON.parse(storedUsers) : [];
+  // ✅ PINALITAN LANG ITO
+  const handleLogin = async () => {
+    if (!canSubmit) return;
 
-    const normalizedUsername = username.trim().toLowerCase();
-    const normalizedPassword = password.trim().toLowerCase();
+    try {
+      const response = await fetch("http://localhost:8000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: username.trim(),
+          password: password.trim(),
+        }),
+      });
 
-    const user = usersList.find((u) => {
-      const uName = String(u.username ?? "").trim().toLowerCase();
-      const uPass = String(u.password ?? "").trim().toLowerCase();
-      return uName === normalizedUsername && uPass === normalizedPassword;
-    });
+      const data = await response.json();
 
-    if (!user) {
-      alert("Invalid credentials");
-      return;
-    }
+      if (!response.ok) {
+        alert("Invalid credentials");
+        return;
+      }
 
-    localStorage.setItem(
-      "currentUser",
-      JSON.stringify({
-        id: user.id,
-        username: user.username,
-        role: user.role,
-        rememberDevice,
-      })
-    );
+      localStorage.setItem("token", data.token);
+      localStorage.setItem(
+        "currentUser",
+        JSON.stringify({
+          name: data.name,
+          role: data.role,
+          rememberDevice,
+        })
+      );
 
-    if (user.role === "Cashier") {
-      navigate("/cashier");
-    } else if (user.role === "Administrator") {
-      navigate("/admin");
-    } else if (user.role === "Supervisor") {
-      navigate("/logs");
+      if (data.role === "cashier") {
+        navigate("/cashier");
+      } else if (data.role === "admin") {
+        navigate("/admin");
+      } else if (data.role === "supervisor") {
+        navigate("/logs");
+      }
+
+    } catch (error) {
+      alert("Cannot connect to server.");
     }
   };
 
@@ -85,19 +93,8 @@ function Login() {
               <div className="input-group">
                 <span className="input-group-text bg-white" aria-hidden="true">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M20 21a8 8 0 0 0-16 0"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
+                    <path d="M20 21a8 8 0 0 0-16 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </span>
                 <input
@@ -118,18 +115,8 @@ function Login() {
               <div className="input-group">
                 <span className="input-group-text bg-white" aria-hidden="true">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M7 10V8a5 5 0 0 1 10 0v2"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M6 10h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinejoin="round"
-                    />
+                    <path d="M7 10V8a5 5 0 0 1 10 0v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M6 10h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
                   </svg>
                 </span>
                 <input
@@ -146,56 +133,8 @@ function Login() {
                   type="button"
                   className="btn btn-outline-secondary login-eye-btn"
                   onClick={() => setShowPassword((v) => !v)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  title={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path
-                        d="M3 3l18 18"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                      />
-                      <path
-                        d="M10.6 10.6a3 3 0 0 0 4.24 4.24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                      />
-                      <path
-                        d="M9.9 5.1A10.8 10.8 0 0 1 12 5c6 0 10 7 10 7a18.2 18.2 0 0 1-3.3 4.4"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M6.2 6.2C3.7 8.2 2 12 2 12s4 7 10 7c1 0 2-.2 3-.5"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path
-                        d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  )}
+                  {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
             </div>
@@ -234,22 +173,13 @@ function Login() {
 
             <div className="login-legal text-center mt-3 small text-muted">
               By logging in, you agree to our{" "}
-              <button
-                type="button"
-                className="btn btn-link p-0 small text-decoration-none"
-                onClick={() => alert("Terms are not available in this demo.")}
-              >
+              <button type="button" className="btn btn-link p-0 small text-decoration-none">
                 Terms of Service
               </button>{" "}
               and{" "}
-              <button
-                type="button"
-                className="btn btn-link p-0 small text-decoration-none"
-                onClick={() => alert("Security policy is not available in this demo.")}
-              >
+              <button type="button" className="btn btn-link p-0 small text-decoration-none">
                 Security Policy
-              </button>
-              .
+              </button>.
             </div>
           </div>
         </div>
