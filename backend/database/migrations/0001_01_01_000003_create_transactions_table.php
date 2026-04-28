@@ -11,10 +11,14 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->string('reference_no')->unique();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->decimal('total_amount', 10, 2);
             $table->decimal('cash_received', 10, 2);
-            $table->decimal('change_amount', 10, 2);
+            $table->decimal('change_amount', 10, 2)->default(0);
+            $table->decimal('discount_amount', 10, 2)->default(0);
+            $table->string('discount_type')->default('No Discount');
+            $table->string('payment_method')->default('CASH');
+            $table->string('status')->default('completed');
             $table->timestamps();
         });
     }

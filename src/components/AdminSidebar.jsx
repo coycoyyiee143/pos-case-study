@@ -113,26 +113,6 @@ function AdminSidebar() {
           <span>Users</span>
         </NavLink>
 
-        <NavLink to="/logs" className="admin-nav-link">
-          <span className="admin-nav-link__icon" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M7 3h10v18H7V3Z"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M9 7h6M9 11h6M9 15h6"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-              />
-            </svg>
-          </span>
-          <span>Audit Logs</span>
-        </NavLink>
-
         <NavLink to="/reports" className="admin-nav-link">
           <span className="admin-nav-link__icon" aria-hidden="true">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">

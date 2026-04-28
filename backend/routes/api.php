@@ -39,6 +39,7 @@ Route::delete('/users/{id}', [UserController::class, 'destroy']);
 Route::prefix('reports')->group(function () {
     Route::get('/sales-summary', [ReportController::class, 'salesSummary']);
     Route::get('/transactions', [ReportController::class, 'transactions']);
+    Route::get('/top-products', [ReportController::class, 'topProducts']);
 });
 
 // ===================== AUDIT LOGS (admin only) =====================

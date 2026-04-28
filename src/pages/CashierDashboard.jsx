@@ -93,56 +93,82 @@ function CashierDashboard() {
       const discount = discountData.discountAmount || 0;
       const grandTotal = subtotalValue - discount;
 
-      const newTransaction = {
-        id: Date.now(),
-        cashier: cashierName,
-        status: "Completed",
-        date: new Date().toISOString().split("T")[0],
-        total: grandTotal,
-        subtotal: subtotalValue,
-        discount,
-        discountType: discountData.label,
-        paymentMethod,
+      // ✅ Payload fields matched exactly to Laravel controller validation rules:
+      //    total_amount, cash_received, items[].id, items[].quantity, items[].price
+      const payload = {
+        total_amount:  grandTotal,
+        cash_received: grandTotal,        // no cash input yet — adjust if you add one
+        discount_amount: discount,
+        discount_type:   discountData.label,
+        payment_method:  paymentMethod,
+        cashier:         cashierName,
         items: cart.map((i) => ({
-          id: i.id,
-          name: i.name,
-          qty: i.qty,
-          price: i.price,
+          id:       i.id,
+          quantity: i.qty,     // ← was "qty", controller expects "quantity"
+          price:    i.price,
         })),
       };
 
-      // UPDATE STOCK SA API
-      await Promise.all(
-        cart.map((item) => {
-          const product = products.find((p) => p.id === item.id);
-          const newStock = product.stock - item.qty;
+      // POST transaction — controller also decrements stock, so no separate PUT needed
+      const transactionRes = await fetch("http://127.0.0.1:8000/api/transactions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-          return fetch(`http://127.0.0.1:8000/api/products/${item.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              name: product.name,
-              price: product.price,
-              stock: newStock,
-            }),
-          });
-        })
-      );
+      // Read as text first so we can show the raw error if it's not JSON
+      const rawText = await transactionRes.text();
+      let savedTransaction;
+      try {
+        savedTransaction = JSON.parse(rawText);
+      } catch {
+        console.error("Non-JSON response from server:", rawText);
+        throw new Error("Server error — check Laravel logs (storage/logs/laravel.log)");
+      }
 
-      // I-REFRESH ANG PRODUCTS MULA SA API
+      if (!transactionRes.ok) {
+        // Laravel validation errors come back as { message, errors }
+        const msg = savedTransaction?.message || "Failed to save transaction";
+        const errors = savedTransaction?.errors
+          ? "\n" + Object.values(savedTransaction.errors).flat().join("\n")
+          : "";
+        throw new Error(msg + errors);
+      }
+
+      // Controller already decremented stock — just refresh products from API
       const res = await fetch("http://127.0.0.1:8000/api/products");
       const updatedProducts = await res.json();
       setProducts(updatedProducts);
 
+      // Save to localStorage for offline cache / receipt history
+      const transactionForReceipt = {
+        id:            savedTransaction.data?.id ?? Date.now(),
+        cashier:       cashierName,
+        status:        "Completed",
+        date:          new Date().toISOString().split("T")[0],
+        total:         grandTotal,
+        subtotal:      subtotalValue,
+        discount,
+        discountType:  discountData.label,
+        paymentMethod,
+        reference_no:  savedTransaction.data?.reference_no ?? "",
+        items: cart.map((i) => ({
+          id:    i.id,
+          name:  i.name,
+          qty:   i.qty,
+          price: i.price,
+        })),
+      };
+
       const transactions = JSON.parse(
         localStorage.getItem("transactions") || "[]"
       );
-      transactions.push(newTransaction);
+      transactions.push(transactionForReceipt);
       localStorage.setItem("transactions", JSON.stringify(transactions));
 
       window.dispatchEvent(new Event("pos-data-update"));
 
-      setLastTransaction(newTransaction);
+      setLastTransaction(transactionForReceipt);
       setShowReceiptModal(true);
 
       setCart([]);
@@ -156,7 +182,7 @@ function CashierDashboard() {
       });
     } catch (err) {
       console.error(err);
-      alert("Cannot connect to server");
+      alert("Transaction failed:\n" + err.message);
     } finally {
       setIsPaying(false);
     }
