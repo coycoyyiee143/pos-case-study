@@ -14,43 +14,47 @@ function Login() {
     return username.trim().length > 0 && password.trim().length > 0;
   }, [username, password]);
 
-  const handleLogin = () => {
-    // GET USERS FROM LOCAL STORAGE
-    const storedUsers = localStorage.getItem("users");
-    const usersList = storedUsers ? JSON.parse(storedUsers) : [];
-
-    const normalizedUsername = username.trim().toLowerCase();
-    const normalizedPassword = password.trim().toLowerCase();
-
-    const user = usersList.find((u) => {
-      const uName = String(u.username ?? "").trim().toLowerCase();
-      const uPass = String(u.password ?? "").trim().toLowerCase();
-      return uName === normalizedUsername && uPass === normalizedPassword;
+  const handleLogin = async () => {
+  try {
+    const res = await fetch("http://127.0.0.1:8000/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username,
+        password,
+      }),
     });
 
-    if (!user) {
-      alert("Invalid credentials");
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message || "Invalid credentials");
       return;
     }
+
+    localStorage.setItem("token", data.token);
 
     localStorage.setItem(
       "currentUser",
       JSON.stringify({
-        id: user.id,
-        username: user.username,
-        role: user.role,
+        id: data.user.id,
+        username: data.user.username,
+        role: data.user.role,
         rememberDevice,
       })
     );
 
-    if (user.role === "Cashier") {
-      navigate("/cashier");
-    } else if (user.role === "Administrator") {
-      navigate("/admin");
-    } else if (user.role === "Supervisor") {
-      navigate("/logs");
-    }
-  };
+    if (data.user.role === "Cashier") navigate("/cashier");
+    else if (data.user.role === "Administrator") navigate("/admin");
+    else navigate("/logs");
+
+  } catch (err) {
+    console.error(err);
+    alert("Cannot connect to server");
+  }
+};
 
   return (
     <div className="login-page">
