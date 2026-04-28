@@ -1,25 +1,13 @@
-const transactions = [
+export const mockTransactions = [
   {
     id: 1,
-    cashier: "cashier1",
-    status: "Completed",
-    date: "2026-03-13",
-    total: 84
-  },
-  {
-    id: 2,
-    cashier: "cashier1",
-    status: "Cancelled",
-    date: "2026-03-12",
-    total: 0
-  },
-  {
-    id: 3,
-    cashier: "cashier2",
-    status: "PostVoid",
-    date: "2026-03-11",
-    total: 120
+    reference_no: "TRX-PREVIEW",
+    total_amount: 0,
+    cash_received: 0,
+    change_amount: 0,
+    created_at: new Date().toLocaleString(),
+    items: []
   }
 ];
 
-export default transactions;
+export default mockTransactions; 
